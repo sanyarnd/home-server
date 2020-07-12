@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik:chevrotin
+    container_name: "traefik"
+    restart: unless-stopped
+    command:
+      - --providers.file.directory=/config
+      - --providers.file.watch=true
+      # Logging
+      - --log=true
+      - --log.filePath=/logs/traefik.log
+      - --log.level=INFO
+      - --log.format=json
+      - --accesslog=true
+      - --accesslog.filepath=/logs/access.log
+      - --accesslog.format=json
+      - --accessLog.bufferingSize=100
+      - --accessLog.filters.statusCodes=400-499
+      # docker settings
+      - --providers.docker=true
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --providers.docker.network=web
+      - --providers.docker.exposedbydefault=false
+      # dashboard
+      - --api=true
+      - --api.dashboard=true
+      # entrypoint configuration
+      - --entrypoints.http.address=:80
+      - --entrypoints.http.http.redirections.entrypoint.to=https
+      - --entrypoints.http.http.redirections.entrypoint.scheme=https
+      - --entrypoints.https.address=:443
+    labels:
+      - traefik.enable=true
+      # dashboard
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.api.entrypoints=https"
+      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.api.middlewares=api-auth"
+      - "traefik.http.routers.api.tls"
+      - "traefik.http.middlewares.api-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-logs:/logs
+      - ./config:/config:ro
+      - ./certs:/certs:ro
+
+volumes:
+  traefik-logs:
+
+networks:
+  web:
+    external: true
