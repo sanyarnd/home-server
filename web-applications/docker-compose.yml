@@ -9,7 +9,7 @@ services:
       - traefik.enable=true
       - traefik.http.routers.jellyfin.rule=PathPrefix(`/jellyfin`)
       - traefik.http.routers.jellyfin.tls=true
-      # no longer required if jellyfin baseurl is set
+      # no longer required after initial setup
       # - traefik.http.middlewares.jellyfin.stripprefix.prefixes=/jellyfin
       # - traefik.http.routers.jellyfin.middlewares=jellyfin
     ports:
@@ -23,8 +23,8 @@ services:
       - web
 
   portainer:
+    image: portainer/portainer:1.24.0
     container_name: portainer
-    image: portainer/portainer
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -38,10 +38,40 @@ services:
     networks:
       - web
 
+  transmission:
+    image: linuxserver/transmission
+    container_name: transmission
+    restart: unless-stopped
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+      - TRANSMISSION_WEB_HOME=/transmission-web-control/
+      - USER=username
+      - PASS=password
+    labels:
+      - traefik.enable=true
+      # we expose multiple ports, this tells traefik which port must be used
+      - traefik.http.services.torrent.loadbalancer.server.port=9091
+      - traefik.http.routers.torrent.rule=PathPrefix(`/torrent`)
+      - traefik.http.routers.torrent.tls=true
+      - traefik.http.middlewares.torrent.stripprefix.prefixes=/torrent
+      - traefik.http.routers.torrent.middlewares=torrent
+    volumes:
+      - transmission-config:/config
+      - /media/8tb/torrents:/downloads
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    networks:
+      - web
+
 volumes:
   jellyfin-config:
   jellyfin-cache:
   portainer-data:
+  transmission-config:
 
 networks:
   web:

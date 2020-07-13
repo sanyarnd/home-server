@@ -11,6 +11,8 @@ Everything should work without any pre-configuration, except few things:
     docker network create web
     ```
 * Update mounted directories with storage location (replace `/media/8tb` with your path)
+* And the most 'complex' part: initial setup with base URL for `Jellyfin`. Main idea is to expose default ports to local network (e.g. `8096`), connect to machine (e.g. `192.168.10.10:8096`), and update default base url in admin settings. Sadly, there is no CLI options for that.
+* Some services (e.g. `Transmission`) do not allow to set base url, so they'll fail to redirect to correct URL after authentication. Simply fix URL (add missing path element)
 
 Then you can run everything with `docker-compose`:
 ```shell script
