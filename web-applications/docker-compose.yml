@@ -2,10 +2,11 @@ version: "3"
 
 services:
   jellyfin:
-    image: jellyfin/jellyfin:10.5.5
+    image: jellyfin/jellyfin
     container_name: jellyfin
     restart: unless-stopped
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.jellyfin.rule=PathPrefix(`/jellyfin`)
       - traefik.http.routers.jellyfin.tls=true
@@ -23,13 +24,14 @@ services:
       - web
 
   portainer:
-    image: portainer/portainer:1.24.0
+    image: portainer/portainer
     container_name: portainer
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=PathPrefix(`/portainer`)
       - traefik.http.routers.portainer.tls=true
@@ -39,7 +41,7 @@ services:
       - web
 
   transmission:
-    image: linuxserver/transmission:3.00-r0-ls60
+    image: linuxserver/transmission
     container_name: transmission
     restart: unless-stopped
     environment:
@@ -50,6 +52,7 @@ services:
       - USER=${TRANSMISSION_USER}
       - PASS=${TRANSMISSION_PASSWORD}
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       # we expose multiple ports, this tells traefik which port must be used
       - traefik.http.services.torrent.loadbalancer.server.port=9091
@@ -68,10 +71,11 @@ services:
       - web
 
   filebrowser:
-    image: filebrowser/filebrowser:v2
+    image: filebrowser/filebrowser
     container_name: filebrowser
     restart: unless-stopped
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       - traefik.http.routers.filebrowser.rule=PathPrefix(`/filebrowser`)
       - traefik.http.routers.filebrowser.tls=true
@@ -91,6 +95,7 @@ volumes:
   portainer-data:
   transmission-config:
   filebrowser-db:
+
 
 networks:
   web:

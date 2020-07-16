@@ -3,7 +3,7 @@ version: "3"
 services:
   traefik:
     image: traefik:chevrotin
-    container_name: "traefik"
+    container_name: traefik
     restart: unless-stopped
     command:
       - --providers.file.directory=/config
@@ -31,14 +31,15 @@ services:
       - --entrypoints.https.address=:443
       # - --serversTransport.insecureSkipVerify=true
     labels:
+      - com.centurylinklabs.watchtower.enable=true
       - traefik.enable=true
       # dashboard
-      - "traefik.http.routers.api.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
-      - "traefik.http.routers.api.entrypoints=https"
-      - "traefik.http.routers.api.service=api@internal"
-      - "traefik.http.routers.api.middlewares=api-auth"
-      - "traefik.http.routers.api.tls"
-      - "traefik.http.middlewares.api-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+      - traefik.http.routers.api.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)
+      - traefik.http.routers.api.entrypoints=https
+      - traefik.http.routers.api.service=api@internal
+      - traefik.http.routers.api.middlewares=api-auth
+      - traefik.http.routers.api.tls
+      - traefik.http.middlewares.api-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/
     security_opt:
       - no-new-privileges:true
     ports:
@@ -55,6 +56,7 @@ services:
 
 volumes:
   traefik-logs:
+
 
 networks:
   web:
