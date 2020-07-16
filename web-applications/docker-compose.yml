@@ -47,8 +47,8 @@ services:
       - PGID=1003
       - TZ=Europe/Moscow
       - TRANSMISSION_WEB_HOME=/transmission-web-control/
-      - USER=username
-      - PASS=password
+      - USER=${TRANSMISSION_USER}
+      - PASS=${TRANSMISSION_PASSWORD}
     labels:
       - traefik.enable=true
       # we expose multiple ports, this tells traefik which port must be used
