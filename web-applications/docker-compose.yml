@@ -39,12 +39,12 @@ services:
       - web
 
   transmission:
-    image: linuxserver/transmission
+    image: linuxserver/transmission:3.00-r0-ls60
     container_name: transmission
     restart: unless-stopped
     environment:
       - PUID=1000
-      - PGID=1000
+      - PGID=1003
       - TZ=Europe/Moscow
       - TRANSMISSION_WEB_HOME=/transmission-web-control/
       - USER=username
@@ -67,11 +67,30 @@ services:
     networks:
       - web
 
+  filebrowser:
+    image: filebrowser/filebrowser:v2
+    container_name: filebrowser
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.filebrowser.rule=PathPrefix(`/filebrowser`)
+      - traefik.http.routers.filebrowser.tls=true
+      - traefik.http.middlewares.filebrowser.stripprefix.prefixes=/filebrowser
+      - traefik.http.routers.filebrowser.middlewares=filebrowser
+    volumes:
+      - ./filebrowser.json:/.filebrowser.json:ro
+      - filebrowser-db:/database-files
+      - /media/8tb:/data/8tb:ro
+    networks:
+      - web
+
+
 volumes:
   jellyfin-config:
   jellyfin-cache:
   portainer-data:
   transmission-config:
+  filebrowser-db:
 
 networks:
   web:
