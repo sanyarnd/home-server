@@ -84,9 +84,22 @@ services:
     volumes:
       - ./filebrowser.json:/.filebrowser.json:ro
       - filebrowser-db:/database-files
-      - /media/8tb:/data/8tb:ro
+      - /media/8tb/Программы:/data/Программы:ro
+      - /media/8tb/Видео:/data/Видео:ro
+      - /media/8tb/Музыка:/data/Музыка:ro
     networks:
       - web
+
+  minidlna:
+    image: geekduck/minidlna
+    container_name: minidlna
+    restart: unless-stopped
+    volumes:
+      - ./minidlna.conf:/etc/minidlna.conf:ro
+      - /media/8tb/Музыка:/opt/Music:ro
+      - /media/8tb/Видео:/opt/Videos:ro
+      - minidlna-cache:/var/cache/minidlna
+    network_mode: host
 
 
 volumes:
@@ -95,6 +108,7 @@ volumes:
   portainer-data:
   transmission-config:
   filebrowser-db:
+  minidlna-cache:
 
 
 networks:

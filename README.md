@@ -5,6 +5,7 @@ Application list:
 * Traefik - routing and encryption (`/dashboard/`)
 * Watchtower - keep images updated
 * Jellyfin - media content (`/jellyfin`)
+* MiniDLNA (local network only, `8200` port)
 * Transmission - torrents (`/torrent`)
 * Portainer - docker monitoring (`/portainer`)
 * Filebrowser - access mounted filesystem from browser (`/filebrowser`)
@@ -24,7 +25,7 @@ Everything should work without any pre-configuration, except a few things:
 
 Then you can run everything with `docker-compose`:
 ```shell script
-cd traefik && docker-compose up -d
 cd watchtower && docker-compose up -d
+cd traefik && docker-compose up -d
 cd web-applications && docker-compose up -d
 ```
