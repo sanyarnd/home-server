@@ -10,6 +10,19 @@ Application list:
 * Portainer - docker monitoring (`/portainer`)
 * Filebrowser - access mounted filesystem from browser (`/filebrowser`)
 
+## Reasoning
+
+First, I wanted to re-use free DNS provided by `Mikrotik`. It's not pretty, but it's free, and it's possible to write a simple scheduled script for syncing (I have public IP, but it's dynamic).
+
+Second, my ISP blocks all default ports (e.g. 22, 25, 80, 443, even 8080). It means I can't use `Let's Encrypt` and similar services (http challenges require any of 80/443 ports to be open, DNS challenge is not possible because I don't own domain). That's why I use self-signed certificate.
+
+Third, I don't own domain, and I can't create subdomains, that's why reverse proxy uses path prefix middleware for navigation.
+
+And lastly, it was a week long trial and error to find apps compatible with path prefix middleware, as well as working internally (local DNS) and externally (`Mikrotik` DNS).
+
+
+## Installation
+
 Everything should work without any pre-configuration, except a few things:
 * self-signed certificate, which must be created before hand with
     ```shell script
