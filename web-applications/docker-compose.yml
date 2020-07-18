@@ -94,6 +94,8 @@ services:
     image: geekduck/minidlna
     container_name: minidlna
     restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
     volumes:
       - ./minidlna.conf:/etc/minidlna.conf:ro
       - /media/8tb/Музыка:/opt/Music:ro
