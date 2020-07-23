@@ -100,6 +100,7 @@ services:
       - ./minidlna.conf:/etc/minidlna.conf:ro
       - /media/8tb/Музыка:/opt/Music:ro
       - /media/8tb/Видео:/opt/Videos:ro
+      - /media/8tb/mikhail-files:/opt/mikhail:ro
       - minidlna-cache:/var/cache/minidlna
     network_mode: host
 
