@@ -42,3 +42,13 @@ cd watchtower && docker-compose up -d
 cd traefik && docker-compose up -d
 cd web-applications && docker-compose up -d
 ```
+
+## Useful commands
+Remote mounting:
+```
+sshfs -o allow_other,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,cache_timeout=3600 -p <ssh-port> <user>@<url>:<server-path> <local-path>
+```
+Unmount:
+```
+fusermount -u <local-path>
+```
