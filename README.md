@@ -8,7 +8,7 @@ Application list:
 * MiniDLNA (local network only, `8200` port)
 * Transmission - torrents (`/torrent`)
 * Portainer - docker monitoring (`/portainer`)
-* Filebrowser - access mounted filesystem from browser (`/filebrowser`)
+* Filebrowser - access mounted filesystem from a browser (`/filebrowser`)
 
 ## Reasoning
 
@@ -24,10 +24,35 @@ And lastly, it was a week long trial and error to find apps compatible with path
 ## Installation
 
 Everything should work without any pre-configuration, except a few things:
-* self-signed certificate, which must be created before hand with
-    ```shell script
-    cd traefik && openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/traefik.key -x509 -days 3650 -out certs/traefik.crt 
-    ```
+* self-signed certificate, which must be created before hand
+    - example cert-config.txt:
+        ```
+        [req]
+        default_bits        = 4096
+        encrypt_key         = no
+        default_md          = sha256
+        prompt              = no
+        utf8                = yes
+        distinguished_name  = req_traefik
+        req_extensions      = v3_req
+        [req_traefik]
+        C  = RU
+        ST = RU
+        L  = Moscow
+        O  = Home
+        CN = 673706cc013b.sn.mynetname.net
+        [v3_req]
+        basicConstraints     = CA:true
+        keyUsage             = critical, digitalSignature, keyEncipherment
+        extendedKeyUsage     = clientAuth, serverAuth
+        subjectAltName       = @alt_names
+        [alt_names]
+        DNS.1 = 673706cc013b.sn.mynetname.net
+        ```
+    - generate certificates:
+        ```shell script
+        cd traefik && openssl req -x509 -days 3650 -nodes -extensions v3_req -config cert-config.txt -keyout certs/traefik.key -out certs/traefik.crt
+        ```
 * external docker network with the name `web`:
     ```shell script
     docker network create web
@@ -41,4 +66,14 @@ Then you can run everything with `docker-compose`:
 cd watchtower && docker-compose up -d
 cd traefik && docker-compose up -d
 cd web-applications && docker-compose up -d
+```
+
+## Useful commands
+Remote mounting:
+```
+sshfs -o allow_other,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,cache_timeout=3600 -p <ssh-port> <user>@<url>:<server-path> <local-path>
+```
+Unmount:
+```
+fusermount -u <local-path>
 ```
