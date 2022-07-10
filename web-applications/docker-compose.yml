@@ -14,12 +14,16 @@ services:
       # - traefik.http.middlewares.jellyfin.stripprefix.prefixes=/jellyfin
       # - traefik.http.routers.jellyfin.middlewares=jellyfin
     ports:
-      # for some reason jellyfin app doesn't work with traefik proxy, open port directly for local mobile clients
       - 8096:8096
     volumes:
       - jellyfin-config:/config
       - jellyfin-cache:/cache
-      - /media/8tb:/media:ro
+      - /mnt/storage:/storage:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     networks:
       - web
 
@@ -46,7 +50,7 @@ services:
     restart: unless-stopped
     environment:
       - PUID=1000
-      - PGID=1004
+      - PGID=1002
       - TZ=Europe/Moscow
       - TRANSMISSION_WEB_HOME=/transmission-web-control/
       - USER=${TRANSMISSION_USER}
@@ -62,7 +66,7 @@ services:
       - traefik.http.routers.torrent.middlewares=torrent
     volumes:
       - transmission-config:/config
-      - /media/8tb/torrents:/downloads
+      - /mnt/storage/torrents:/downloads
     ports:
       - 9091:9091
       - 51413:51413
@@ -84,9 +88,7 @@ services:
     volumes:
       - ./filebrowser.json:/.filebrowser.json:ro
       - filebrowser-db:/database-files
-      - /media/8tb/Программы:/data/Программы:ro
-      - /media/8tb/Видео:/data/Видео:ro
-      - /media/8tb/Музыка:/data/Музыка:ro
+      - /mnt/storage:/data:ro
     networks:
       - web
 
@@ -98,9 +100,9 @@ services:
       - com.centurylinklabs.watchtower.enable=true
     volumes:
       - ./minidlna.conf:/etc/minidlna.conf:ro
-      - /media/8tb/Музыка:/opt/Music:ro
-      - /media/8tb/Видео:/opt/Videos:ro
-      - /media/8tb/mikhail-files:/opt/mikhail:ro
+      - /storage/Музыка:/opt/Music:ro
+      - /storage/Видео:/opt/Videos:ro
+      - /storage/МЭ:/opt/mikhail:ro
       - minidlna-cache:/var/cache/minidlna
     network_mode: host
 
